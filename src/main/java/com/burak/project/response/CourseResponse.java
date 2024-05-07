@@ -11,6 +11,7 @@ public class CourseResponse {
     private String title;
     private String description;
     private Long instructorId;
+    private String instructorName;
     private Integer duration;
     private Integer enrollmentCount;
     private List<WeekResponse> weekResponses;
@@ -20,6 +21,7 @@ public class CourseResponse {
         title = course.getTitle();
         description = course.getDescription();
         instructorId = course.getInstructor().getId();
+        instructorName = course.getInstructor().getUsername();
         duration = course.getDuration();
         enrollmentCount = course.getEnrollments().size();
         weekResponses = course.getWeeks().stream().map(WeekResponse::new).toList();
