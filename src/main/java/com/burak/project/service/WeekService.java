@@ -20,12 +20,13 @@ public class WeekService {
     }
 
     public List<Week> createWeeks(Course course, List<WeekRequest> weekRequests){
-        return weekRequests.stream()
+        List<Week> weeks = weekRequests.stream()
                 .map(weekRequest -> Week.builder()
                         .course(course)
                         .reading(weekRequest.getReading())
                         .build())
                 .collect(Collectors.toList());
+        return weekRepository.saveAll(weeks);
     }
 
     @Transactional
@@ -43,7 +44,7 @@ public class WeekService {
     }
 
     public Week updateWeek(Long weekId, WeekRequest weekRequest) {
-        Week week = weekRepository.findById(weekRequest.getId())
+        Week week = weekRepository.findById(weekId)
                 .orElseThrow(() -> new EntityNotFoundException("Week not found with ID: " + weekRequest.getId()));
         week.setReading(weekRequest.getReading());
         return weekRepository.save(week);

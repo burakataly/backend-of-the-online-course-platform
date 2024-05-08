@@ -1,5 +1,6 @@
 package com.burak.project.service;
 
+import com.burak.project.model.Instructor;
 import com.burak.project.model.Student;
 import com.burak.project.repository.IStudentRepository;
 import com.burak.project.request.StudentRequest;
@@ -41,15 +42,18 @@ public class StudentService {
     }
 
     public Student updateStudent(Long studentId, StudentRequest studentRequest) {
-        Student student = studentRepository.findByUsername(studentRequest.getUsername());
-        if(student != null) throw new EntityExistsException(
-                "There is already a student with this username.");
+        if(studentRequest.getUsername() == null || studentRequest.getPassword() == null) throw
+                new EntityNotFoundException("username or password cannot be null");
         Optional<Student> temp = studentRepository.findById(studentId);
         if(temp.isPresent()){
             Student foundStudent = temp.get();
+            Student student = studentRepository.findByUsername(studentRequest.getUsername());
+            if(student != null && !studentId.equals(student.getId())) throw
+                    new EntityExistsException("There is already a student with this username.");
+
             foundStudent.setUsername(studentRequest.getUsername());
             foundStudent.setPassword(studentRequest.getPassword());
-            foundStudent.setBalance(studentRequest.getBalance()); //frontend should handle balance operations after buying a course
+            foundStudent.setBalance(studentRequest.getBalance());
             return studentRepository.save(foundStudent);
         }
         else throw new EntityNotFoundException("Invalid studentId");

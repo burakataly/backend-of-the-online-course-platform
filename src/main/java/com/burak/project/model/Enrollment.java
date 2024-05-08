@@ -37,5 +37,5 @@ public class Enrollment {
 
     @OneToMany(mappedBy = "enrollment")
     @OrderBy("week.id ASC")
-    private List<UserProgress> weekStatuses;
+    private List<UserProgress> userProgresses;
 }

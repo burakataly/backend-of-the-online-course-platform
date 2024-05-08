@@ -1,7 +1,6 @@
 package com.burak.project.response;
 
 import com.burak.project.model.UserProgress;
-import com.burak.project.model.Week;
 import lombok.Data;
 
 @Data

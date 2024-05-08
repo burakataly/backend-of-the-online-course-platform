@@ -13,6 +13,7 @@ public class CourseResponse {
     private Long instructorId;
     private String instructorName;
     private Integer duration;
+    private Double price;
     private Integer enrollmentCount;
     private List<WeekResponse> weekResponses;
 
@@ -23,6 +24,7 @@ public class CourseResponse {
         instructorId = course.getInstructor().getId();
         instructorName = course.getInstructor().getUsername();
         duration = course.getDuration();
+        price = course.getPrice();
         enrollmentCount = course.getEnrollments().size();
         weekResponses = course.getWeeks().stream().map(WeekResponse::new).toList();
     }

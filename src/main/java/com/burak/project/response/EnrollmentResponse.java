@@ -12,13 +12,14 @@ public class EnrollmentResponse {
     private Long studentId;
     private Long courseId;
     private LocalDate enrollmentDate;
-    private List<UserProgressResponse> weekStatuses;
+    private List<UserProgressResponse> userProgresses;
 
     public EnrollmentResponse(Enrollment enrollment){
         id = enrollment.getId();
         studentId = enrollment.getStudent().getId();
         courseId = enrollment.getCourse().getId();
         enrollmentDate = enrollment.getEnrollmentDate();
-        weekStatuses = enrollment.getWeekStatuses().stream().map(UserProgressResponse::new).toList();
+        userProgresses = enrollment.getUserProgresses().stream().map(UserProgressResponse::new).
+                toList();
     }
 }

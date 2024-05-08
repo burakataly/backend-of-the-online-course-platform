@@ -1,4 +1,74 @@
 package com.burak.project.service;
 
+import com.burak.project.model.Course;
+import com.burak.project.model.Enrollment;
+import com.burak.project.model.Student;
+import com.burak.project.model.UserProgress;
+import com.burak.project.repository.IEnrollmentRepository;
+import com.burak.project.request.EnrollmentRequest;
+import com.burak.project.request.UserProgressRequest;
+import jakarta.persistence.EntityNotFoundException;
+import org.springframework.stereotype.Service;
+
+import java.time.LocalDate;
+import java.util.List;
+import java.util.Optional;
+
+@Service
 public class EnrollmentService {
+    private final IEnrollmentRepository enrollmentRepository;
+    private final UserProgressService userProgressService;
+    private final StudentService studentService;
+    private final CourseService courseService;
+
+    public EnrollmentService(IEnrollmentRepository enrollmentRepository,
+                             UserProgressService userProgressService,
+                             StudentService studentService, CourseService courseService) {
+        this.enrollmentRepository = enrollmentRepository;
+        this.userProgressService = userProgressService;
+        this.studentService = studentService;
+        this.courseService = courseService;
+    }
+
+    public List<Enrollment> getAllEnrollments(Optional<Long> studentId){
+        return (studentId.isPresent()) ? enrollmentRepository.findByStudentId(studentId.get()) :
+                enrollmentRepository.findAll();
+    }
+
+    public Enrollment getEnrollmentById(Long enrollmentId) {
+        return enrollmentRepository.findById(enrollmentId).orElseThrow(() -> new EntityNotFoundException(
+                "Invalid enrollmentId"));
+    }
+
+    public Enrollment createEnrollment(EnrollmentRequest enrollmentRequest) {
+        Student student = studentService.getStudentById(enrollmentRequest.getStudentId());
+        Course course = courseService.getCourseById(enrollmentRequest.getCourseId());
+        Enrollment enrollment = Enrollment.builder().
+                student(student).
+                course(course).
+                enrollmentDate(LocalDate.now()).
+                build();
+        enrollment = enrollmentRepository.save(enrollment);
+
+        List<UserProgress> userProgresses = userProgressService.createUserProgresses(enrollment, course.getWeeks());
+        enrollment.setUserProgresses(userProgresses);
+        return enrollment;
+    }
+
+    public Enrollment updateEnrollment(EnrollmentRequest enrollmentRequest, Long enrollmentId) {
+        Optional<Enrollment> temp = enrollmentRepository.findById(enrollmentId);
+        if(temp.isEmpty()) throw new EntityNotFoundException("Invalid enrollmentId");
+
+        Enrollment enrollment = temp.get();
+        userProgressService.updateUserProgresses(enrollmentRequest.getUserProgresses());
+        return enrollmentRepository.save(enrollment);
+    }
+
+    public UserProgress updateUserProgress(Long userProgressId, UserProgressRequest userProgressRequest) {
+        return userProgressService.updateUserProgress(userProgressId, userProgressRequest);
+    }
+
+    public void deleteEnrollment(Long enrollmentId) {
+        enrollmentRepository.deleteById(enrollmentId);
+    }
 }

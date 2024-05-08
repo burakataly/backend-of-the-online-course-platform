@@ -39,15 +39,19 @@ public class CourseService {
     public Course createCourse(CourseRequest courseRequest) {
         Instructor instructor = instructorService.getInstructorById(
                 courseRequest.getInstructorId());
+        if(courseRequest.getPrice() < 0.0) throw new EntityNotFoundException(
+                "Course price cannot be less than 0");
         Course course = Course.builder().
                 title(courseRequest.getTitle()).
                 description(courseRequest.getDescription()).
                 duration(courseRequest.getWeeks().size()).
+                price(courseRequest.getPrice()).
                 instructor(instructor).
                 build();
+        course = courseRepository.save(course);
         List<Week> weeks = weekService.createWeeks(course, courseRequest.getWeeks());
         course.setWeeks(weeks);
-        return courseRepository.save(course);
+        return course;
     }
 
     @Transactional
@@ -57,13 +61,9 @@ public class CourseService {
         Course foundCourse = temp.get();
         foundCourse.setTitle(courseRequest.getTitle());
         foundCourse.setDescription(courseRequest.getDescription());
-        updateWeeks(courseRequest.getWeeks());
+        foundCourse.setPrice(courseRequest.getPrice());
+        weekService.updateWeeks(courseRequest.getWeeks());
         return courseRepository.save(foundCourse);
-    }
-
-    @Transactional
-    public void updateWeeks(List<WeekRequest> weekRequests) {
-        weekService.updateWeeks(weekRequests);
     }
 
     public Week updateWeek(Long weekId, WeekRequest weekRequest){

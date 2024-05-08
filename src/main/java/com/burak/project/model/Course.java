@@ -29,6 +29,8 @@ public class Course {
 
     private Integer duration; //the number of weeks
 
+    private Double price;
+
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "instructor_id", nullable = false)
     @OnDelete(action = OnDeleteAction.CASCADE)

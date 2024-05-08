@@ -39,12 +39,15 @@ public class InstructorService {
     }
 
     public Instructor updateInstructor(Long instructorId, InstructorRequest instructorRequest) {
-        Instructor instructor = instructorRepository.findByUsername(instructorRequest.getUsername());
-        if(instructor != null) throw new EntityExistsException(
-                "There is already an instructor with this username.");
+        if(instructorRequest.getUsername() == null || instructorRequest.getPassword() == null) throw
+            new EntityNotFoundException("username or password cannot be null");
         Optional<Instructor> temp = instructorRepository.findById(instructorId);
         if(temp.isPresent()){
             Instructor foundInstructor = temp.get();
+            Instructor instructor = instructorRepository.findByUsername(instructorRequest.getUsername());
+            if(instructor != null && !instructorId.equals(instructor.getId())) throw
+                    new EntityExistsException("There is already an instructor with this username.");
+
             foundInstructor.setUsername(instructorRequest.getUsername());
             foundInstructor.setPassword(instructorRequest.getPassword());
             foundInstructor.setBiography(instructorRequest.getBiography());
