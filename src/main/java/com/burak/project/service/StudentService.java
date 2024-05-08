@@ -1,6 +1,5 @@
 package com.burak.project.service;
 
-import com.burak.project.model.Instructor;
 import com.burak.project.model.Student;
 import com.burak.project.repository.IStudentRepository;
 import com.burak.project.request.StudentRequest;
