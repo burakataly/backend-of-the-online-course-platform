@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+import java.util.OptionalLong;
 
 @Service
 public class EnrollmentService {
@@ -30,8 +31,8 @@ public class EnrollmentService {
         this.courseService = courseService;
     }
 
-    public List<Enrollment> getAllEnrollments(Optional<Long> studentId){
-        return (studentId.isPresent()) ? enrollmentRepository.findByStudentId(studentId.get()) :
+    public List<Enrollment> getAllEnrollments(Long studentId){
+        return (studentId != null) ? enrollmentRepository.findByStudentId(studentId) :
                 enrollmentRepository.findAll();
     }
 

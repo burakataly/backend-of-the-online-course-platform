@@ -26,8 +26,8 @@ public class CourseService {
         this.weekService = weekService;
     }
 
-    public List<Course> getAllCourses(Optional<Long> instructorId){
-        return (instructorId.isPresent()) ? courseRepository.findByInstructorId(instructorId.get()) :
+    public List<Course> getAllCourses(Long instructorId){
+        return (instructorId != null) ? courseRepository.findByInstructorId(instructorId) :
                 courseRepository.findAll();
     }
 

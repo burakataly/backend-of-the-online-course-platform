@@ -22,7 +22,7 @@ public class CourseController {
     }
 
     @GetMapping
-    public List<CourseResponse> getAllCourses(@RequestParam Optional<Long> instructorId){
+    public List<CourseResponse> getAllCourses(@RequestParam(required = false) Long instructorId){
         List<Course> courses = courseService.getAllCourses(instructorId);
         return (courses == null) ? null : courses.stream().map(CourseResponse::new).toList();
     }

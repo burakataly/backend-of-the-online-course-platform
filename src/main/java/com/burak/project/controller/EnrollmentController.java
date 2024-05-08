@@ -22,7 +22,7 @@ public class EnrollmentController {
     }
 
     @GetMapping
-    public List<EnrollmentResponse> getAllEnrollments(@RequestParam Optional<Long> studentId){
+    public List<EnrollmentResponse> getAllEnrollments(@RequestParam(required = false) Long studentId){
         List<Enrollment> enrollments = enrollmentService.getAllEnrollments(studentId);
         return (enrollments == null) ? null : enrollments.stream().map(EnrollmentResponse::new).toList();
     }
