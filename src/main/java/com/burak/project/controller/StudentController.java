@@ -12,6 +12,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/students")
+@CrossOrigin(origins = "*")
 public class StudentController {
     private final StudentService studentService;
 
@@ -35,6 +36,12 @@ public class StudentController {
     public ResponseEntity<Void> createStudent(@RequestBody StudentRequest studentRequest){
         return (studentService.createStudent(studentRequest) != null) ? new ResponseEntity<>(HttpStatus.CREATED) :
                 new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<Void> login(@RequestBody StudentRequest studentRequest){
+        return(studentService.login(studentRequest) != null) ? new ResponseEntity<>(HttpStatus.OK) :
+                new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
     }
 
     @PutMapping("/{studentId}")

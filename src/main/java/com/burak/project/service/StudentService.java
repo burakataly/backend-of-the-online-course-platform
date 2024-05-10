@@ -40,6 +40,12 @@ public class StudentService {
         return studentRepository.save(student);
     }
 
+    public Student login(StudentRequest studentRequest) {
+        Student student = studentRepository.findByUsername(studentRequest.getUsername());
+        return (student == null || student.getPassword().equals(
+                studentRequest.getPassword())) ? student : null;
+    }
+
     public Student updateStudent(Long studentId, StudentRequest studentRequest) {
         if(studentRequest.getUsername() == null || studentRequest.getPassword() == null) throw
                 new EntityNotFoundException("username or password cannot be null");

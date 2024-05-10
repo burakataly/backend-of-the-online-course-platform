@@ -5,6 +5,7 @@ import com.burak.project.repository.IInstructorRepository;
 import com.burak.project.request.InstructorRequest;
 import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -58,5 +59,11 @@ public class InstructorService {
 
     public void deleteInstructor(Long instructorId) {
         instructorRepository.deleteById(instructorId);
+    }
+
+    public Instructor login(InstructorRequest instructorRequest) {
+        Instructor instructor = instructorRepository.findByUsername(instructorRequest.getUsername());
+        return (instructor == null || instructor.getPassword().equals(
+                instructorRequest.getPassword())) ? instructor : null;
     }
 }

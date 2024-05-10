@@ -6,6 +6,7 @@ import com.burak.project.model.Student;
 import com.burak.project.model.UserProgress;
 import com.burak.project.repository.IEnrollmentRepository;
 import com.burak.project.request.EnrollmentRequest;
+import com.burak.project.request.StudentRequest;
 import com.burak.project.request.UserProgressRequest;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
@@ -43,6 +44,14 @@ public class EnrollmentService {
     public Enrollment createEnrollment(EnrollmentRequest enrollmentRequest) {
         Student student = studentService.getStudentById(enrollmentRequest.getStudentId());
         Course course = courseService.getCourseById(enrollmentRequest.getCourseId());
+
+        StudentRequest studentRequest = StudentRequest.builder().
+                username(student.getUsername()).
+                password(student.getPassword()).
+                balance(student.getBalance() - course.getPrice()).
+                build();
+        studentService.updateStudent(student.getId(), studentRequest);
+
         Enrollment enrollment = Enrollment.builder().
                 student(student).
                 course(course).
