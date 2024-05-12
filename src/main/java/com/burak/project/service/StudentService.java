@@ -47,7 +47,7 @@ public class StudentService {
     }
 
     public Student updateStudent(Long studentId, StudentRequest studentRequest) {
-        if(studentRequest.getUsername() == null || studentRequest.getPassword() == null) throw
+        if(studentRequest.getUsername() == null) throw
                 new EntityNotFoundException("username or password cannot be null");
         Optional<Student> temp = studentRepository.findById(studentId);
         if(temp.isPresent()){
@@ -57,7 +57,6 @@ public class StudentService {
                     new EntityExistsException("There is already a student with this username.");
 
             foundStudent.setUsername(studentRequest.getUsername());
-            foundStudent.setPassword(studentRequest.getPassword());
             foundStudent.setBalance(studentRequest.getBalance());
             return studentRepository.save(foundStudent);
         }

@@ -14,6 +14,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/courses")
+@CrossOrigin(origins = "*")
 public class CourseController {
     private final CourseService courseService;
 

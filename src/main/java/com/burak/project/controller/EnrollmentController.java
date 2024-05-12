@@ -13,6 +13,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/enrollments")
+@CrossOrigin(origins = "*")
 public class EnrollmentController {
     private final EnrollmentService enrollmentService;
 
@@ -53,5 +54,10 @@ public class EnrollmentController {
     @DeleteMapping("/{enrollmentId}")
     public void deleteEnrollment(@PathVariable Long enrollmentId){
         enrollmentService.deleteEnrollment(enrollmentId);
+    }
+
+    @DeleteMapping
+    public void deleteEnrollmentWithForeignKeys(@RequestParam Long studentId, @RequestParam Long courseId){
+        enrollmentService.deleteEnrollmentWithForeignKeys(studentId, courseId);
     }
 }

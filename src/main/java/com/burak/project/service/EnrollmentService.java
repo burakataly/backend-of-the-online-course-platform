@@ -80,4 +80,11 @@ public class EnrollmentService {
     public void deleteEnrollment(Long enrollmentId) {
         enrollmentRepository.deleteById(enrollmentId);
     }
+
+    public void deleteEnrollmentWithForeignKeys(Long studentId, Long courseId) {
+        Student student = studentService.getStudentById(studentId);
+        Course course = courseService.getCourseById(courseId);
+        Enrollment enrollment = enrollmentRepository.findByForeignKeys(studentId, courseId);
+        enrollmentRepository.deleteById(enrollment.getId());
+    }
 }

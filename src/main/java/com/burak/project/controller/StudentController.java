@@ -39,9 +39,10 @@ public class StudentController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<Void> login(@RequestBody StudentRequest studentRequest){
-        return(studentService.login(studentRequest) != null) ? new ResponseEntity<>(HttpStatus.OK) :
-                new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+    public ResponseEntity<StudentResponse> login(@RequestBody StudentRequest studentRequest){
+        Student student = studentService.login(studentRequest);
+        return(student == null) ? new ResponseEntity<>(HttpStatus.UNAUTHORIZED) :
+                ResponseEntity.status(HttpStatus.OK).body(new StudentResponse(student));
     }
 
     @PutMapping("/{studentId}")

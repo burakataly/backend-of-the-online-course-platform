@@ -39,9 +39,10 @@ public class InstructorController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<Void> login(@RequestBody InstructorRequest instructorRequest){
-        return(instructorService.login(instructorRequest) != null) ? new ResponseEntity<>(HttpStatus.OK) :
-                new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+    public ResponseEntity<InstructorResponse> login(@RequestBody InstructorRequest instructorRequest){
+        Instructor instructor = instructorService.login(instructorRequest);
+        return(instructor == null) ? new ResponseEntity<>(HttpStatus.UNAUTHORIZED) :
+                ResponseEntity.status(HttpStatus.OK).body(new InstructorResponse(instructor));
     }
 
     @PutMapping("/{instructorId}")
