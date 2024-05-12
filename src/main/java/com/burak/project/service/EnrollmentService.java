@@ -78,13 +78,28 @@ public class EnrollmentService {
     }
 
     public void deleteEnrollment(Long enrollmentId) {
-        enrollmentRepository.deleteById(enrollmentId);
+        Optional<Enrollment> temp = enrollmentRepository.findById(enrollmentId);
+        if(temp.isPresent()){
+            Student student = temp.get().getStudent();
+            Course course = temp.get().getCourse();
+            StudentRequest studentRequest = StudentRequest.builder().
+                    username(student.getUsername()).
+                    balance(student.getBalance() + course.getPrice()).
+                    build();
+            studentService.updateStudent(student.getId(), studentRequest);
+            enrollmentRepository.deleteById(enrollmentId);
+        }
     }
 
     public void deleteEnrollmentWithForeignKeys(Long studentId, Long courseId) {
         Student student = studentService.getStudentById(studentId);
         Course course = courseService.getCourseById(courseId);
         Enrollment enrollment = enrollmentRepository.findByForeignKeys(studentId, courseId);
+        StudentRequest studentRequest = StudentRequest.builder().
+                username(student.getUsername()).
+                balance(student.getBalance() + course.getPrice()).
+                build();
+        studentService.updateStudent(studentId, studentRequest);
         enrollmentRepository.deleteById(enrollment.getId());
     }
 }
