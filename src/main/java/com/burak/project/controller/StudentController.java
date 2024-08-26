@@ -38,13 +38,6 @@ public class StudentController {
                 new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
-    @PostMapping("/login")
-    public ResponseEntity<StudentResponse> login(@RequestBody StudentRequest studentRequest){
-        Student student = studentService.login(studentRequest);
-        return(student == null) ? new ResponseEntity<>(HttpStatus.UNAUTHORIZED) :
-                ResponseEntity.status(HttpStatus.OK).body(new StudentResponse(student));
-    }
-
     @PutMapping("/{studentId}")
     public ResponseEntity<Void> updateStudent(@PathVariable Long studentId,
                                                  @RequestBody StudentRequest studentRequest){

@@ -1,11 +1,13 @@
 package com.burak.project.service;
 
 import com.burak.project.model.Instructor;
+import com.burak.project.model.Student;
 import com.burak.project.repository.IInstructorRepository;
+import com.burak.project.repository.IStudentRepository;
 import com.burak.project.request.InstructorRequest;
 import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
-import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -14,13 +16,23 @@ import java.util.Optional;
 @Service
 public class InstructorService {
     private final IInstructorRepository instructorRepository;
+    private final IStudentRepository studentRepository;
+    private final BCryptPasswordEncoder passwordEncoder;
 
-    public InstructorService(IInstructorRepository instructorRepository){
+    public InstructorService(IInstructorRepository instructorRepository,
+                             IStudentRepository studentRepository,
+                             BCryptPasswordEncoder passwordEncoder) {
+        this.studentRepository = studentRepository;
         this.instructorRepository = instructorRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     public Instructor getInstructorById(Long instructorId) {
         return instructorRepository.findById(instructorId).orElseThrow(() -> new EntityNotFoundException("Invalid instructorId"));
+    }
+
+    public Instructor getInstructorByUsername(String username) {
+        return instructorRepository.findByUsername(username);
     }
 
     public List<Instructor> getAllInstructors() {
@@ -29,12 +41,13 @@ public class InstructorService {
 
     public Instructor createInstructor(InstructorRequest instructorRequest) {
         Instructor instructor = instructorRepository.findByUsername(instructorRequest.getUsername());
-        if(instructor != null) throw new EntityExistsException(
-                "There is already an instructor with this username.");
+        Student student = studentRepository.findByUsername(instructorRequest.getUsername());
+        if(instructor != null || student != null) throw new EntityExistsException(
+                "There is already a user with this username.");
         instructor = Instructor.builder().
                 biography(instructorRequest.getBiography()).
                 username(instructorRequest.getUsername()).
-                password(instructorRequest.getPassword()).
+                password(passwordEncoder.encode(instructorRequest.getPassword())).
                 build();
         return instructorRepository.save(instructor);
     }
@@ -59,11 +72,5 @@ public class InstructorService {
 
     public void deleteInstructor(Long instructorId) {
         instructorRepository.deleteById(instructorId);
-    }
-
-    public Instructor login(InstructorRequest instructorRequest) {
-        Instructor instructor = instructorRepository.findByUsername(instructorRequest.getUsername());
-        return (instructor == null || instructor.getPassword().equals(
-                instructorRequest.getPassword())) ? instructor : null;
     }
 }

@@ -31,9 +31,12 @@ public class EnrollmentService {
         this.courseService = courseService;
     }
 
-    public List<Enrollment> getAllEnrollments(Long studentId){
-        return (studentId != null) ? enrollmentRepository.findByStudentId(studentId) :
-                enrollmentRepository.findAll();
+    public List<Enrollment> getAllEnrollments(){
+        return enrollmentRepository.findAll();
+    }
+
+    public List<Enrollment> getEnrollmentsByStudentId(Long studentId){
+        return (studentId != null) ? enrollmentRepository.findByStudentId(studentId) : null;
     }
 
     public Enrollment getEnrollmentById(Long enrollmentId) {

@@ -15,7 +15,6 @@ public class CourseResponse {
     private Integer duration;
     private Double price;
     private Integer enrollmentCount;
-    private List<EnrollmentResponse> enrollments;
     private List<WeekResponse> weeks;
 
     public CourseResponse(Course course){
@@ -27,7 +26,6 @@ public class CourseResponse {
         duration = course.getDuration();
         price = course.getPrice();
         enrollmentCount = course.getEnrollments().size();
-        enrollments = course.getEnrollments().stream().map(EnrollmentResponse::new).toList();
         weeks = course.getWeeks().stream().map(WeekResponse::new).toList();
     }
 }

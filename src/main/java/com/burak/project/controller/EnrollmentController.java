@@ -22,8 +22,14 @@ public class EnrollmentController {
     }
 
     @GetMapping
-    public List<EnrollmentResponse> getAllEnrollments(@RequestParam(required = false) Long studentId){
-        List<Enrollment> enrollments = enrollmentService.getAllEnrollments(studentId);
+    public List<EnrollmentResponse> getAllEnrollments(){
+        List<Enrollment> enrollments = enrollmentService.getAllEnrollments();
+        return (enrollments == null) ? null : enrollments.stream().map(EnrollmentResponse::new).toList();
+    }
+
+    @GetMapping("/student/{studentId}")
+    public List<EnrollmentResponse> getEnrollmentsByStudentId(@PathVariable Long studentId){
+        List<Enrollment> enrollments = enrollmentService.getEnrollmentsByStudentId(studentId);
         return (enrollments == null) ? null : enrollments.stream().map(EnrollmentResponse::new).toList();
     }
 
