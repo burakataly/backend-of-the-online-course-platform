@@ -16,7 +16,6 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -48,8 +47,6 @@ public class AuthService {
     }
 
     public ResponseEntity<AuthResponse> login(LoginRequest loginRequest) {
-        JwtUserDetails userDetails = userDetailsService.loadUserByUsername(loginRequest.getUsername());
-        System.out.println(userDetails.getUsername() + ", " + userDetails.getPassword());
         if(doAuthenticate(loginRequest)){
             return createToken("user is successfully logged in.", loginRequest.getUsername());
         }
@@ -127,30 +124,28 @@ public class AuthService {
 
     private ResponseEntity<AuthResponse> createToken(String message, String username){
 
-        Long userId = findUserIdByUsername(username);
-        if(userId == null) throw new BadCredentialsException("there is not a user with this username: " + username);
+        JwtUserDetails userDetails = userDetailsService.loadUserByUsername(username);
 
-        String accessToken = jwtTokenProvider.generateToken(username);
-        String refreshToken = jwtTokenProvider.generateRefreshToken(username);
+        String accessToken = jwtTokenProvider.generateToken(userDetails.getUsername());
+        String refreshToken = jwtTokenProvider.generateRefreshToken(userDetails.getUsername());
 
-        Token token = tokenRepository.findByUserId(userId);
+        Token token = tokenRepository.findByUserId(userDetails.getId());
+
         if(token == null){
             token = Token.builder()
-                    .accessToken(accessToken)
                     .refreshToken(refreshToken)
-                    .userId(userId).
+                    .userId(userDetails.getId()).
                     build();
         }
         else{
-            token.setAccessToken(accessToken);
             token.setRefreshToken(refreshToken);
         }
 
         tokenRepository.save(token);
         return new ResponseEntity<>(AuthResponse.builder().
-                accessToken("Bearer " + token.getAccessToken()).
+                accessToken("Bearer " + accessToken).
                 refreshToken(token.getRefreshToken()).
-                userId(userId).
+                userId(userDetails.getId()).
                 message(message).build(), HttpStatus.CREATED);
     }
 
@@ -164,13 +159,5 @@ public class AuthService {
             logger.error("Exception during authentication: ", e);
             return false;
         }
-    }
-
-    private Long findUserIdByUsername(String username){
-        Student student = studentService.getStudentByUsername(username);
-        Instructor instructor = instructorService.getInstructorByUsername(username);
-        if(student != null) return student.getId();
-        if(instructor != null) return instructor.getId();
-        return null;
     }
 }
