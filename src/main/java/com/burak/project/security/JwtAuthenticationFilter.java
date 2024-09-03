@@ -36,8 +36,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             String username = null;
 
             if(header == null || !header.startsWith("Bearer ")){
-                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                response.getWriter().write("{'error': 'Missing or invalid token'}");
+filterChain.doFilter(request, response);
                 return;
             }
 
