@@ -40,6 +40,7 @@ public class InstructorService {
     }
 
     public Instructor createInstructor(InstructorRequest instructorRequest) {
+        if(instructorRequest.getUsername() == null) throw new IllegalArgumentException("username cannot be null");
         Instructor instructor = instructorRepository.findByUsername(instructorRequest.getUsername());
         Student student = studentRepository.findByUsername(instructorRequest.getUsername());
         if(instructor != null || student != null) throw new EntityExistsException(

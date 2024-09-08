@@ -11,4 +11,5 @@ public class CourseRequest {
     private Long instructorId;
     private Double price;
     private List<WeekRequest> weeks;
+
 }

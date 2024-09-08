@@ -39,6 +39,10 @@ public class EnrollmentService {
         return (studentId != null) ? enrollmentRepository.findByStudentId(studentId) : null;
     }
 
+    public List<Enrollment> getEnrollmentsByCourseId(Long courseId) {
+        return (courseId != null) ? enrollmentRepository.findByCourseId(courseId) : null;
+    }
+
     public Enrollment getEnrollmentById(Long enrollmentId) {
         return enrollmentRepository.findById(enrollmentId).orElseThrow(() -> new EntityNotFoundException(
                 "Invalid enrollmentId"));

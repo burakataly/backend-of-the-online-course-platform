@@ -14,7 +14,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/courses")
-@CrossOrigin(origins = "*")
+
 public class CourseController {
     private final CourseService courseService;
 
@@ -35,6 +35,7 @@ public class CourseController {
 
     @PostMapping
     public ResponseEntity<Void> createCourse(@RequestBody CourseRequest courseRequest){
+        System.out.println(courseRequest.toString());
         return (courseService.createCourse(courseRequest) != null) ? new ResponseEntity<>(HttpStatus.CREATED) :
                 new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
     }

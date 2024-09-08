@@ -7,7 +7,9 @@ import org.springframework.data.jpa.repository.Query;
 import java.util.List;
 
 public interface IEnrollmentRepository extends JpaRepository<Enrollment, Long> {
-    List<Enrollment> findByStudentId(Long aLong);
+    List<Enrollment> findByStudentId(Long studentId);
+
+    List<Enrollment> findByCourseId(Long courseId);
 
     @Query("SELECT e FROM Enrollment e WHERE " +
             "(:studentId = e.student.id) AND" +

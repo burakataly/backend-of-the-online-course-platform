@@ -13,7 +13,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/enrollments")
-@CrossOrigin(origins = "*")
+
 public class EnrollmentController {
     private final EnrollmentService enrollmentService;
 
@@ -30,6 +30,12 @@ public class EnrollmentController {
     @GetMapping("/student/{studentId}")
     public List<EnrollmentResponse> getEnrollmentsByStudentId(@PathVariable Long studentId){
         List<Enrollment> enrollments = enrollmentService.getEnrollmentsByStudentId(studentId);
+        return (enrollments == null) ? null : enrollments.stream().map(EnrollmentResponse::new).toList();
+    }
+
+    @GetMapping("/course/{courseId}")
+    public List<EnrollmentResponse> getEnrollmentsByCourseId(@PathVariable Long courseId){
+        List<Enrollment> enrollments = enrollmentService.getEnrollmentsByCourseId(courseId);
         return (enrollments == null) ? null : enrollments.stream().map(EnrollmentResponse::new).toList();
     }
 

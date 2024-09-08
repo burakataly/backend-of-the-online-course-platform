@@ -55,48 +55,34 @@ public class AuthService {
     }
 
     public ResponseEntity<AuthResponse> registerStudent(StudentRequest studentRequest) {
-        if(studentService.getStudentByUsername(studentRequest.getUsername()) == null){
-            Student student = studentService.createStudent(studentRequest);
-            LoginRequest loginRequest = LoginRequest.builder()
-                    .username(studentRequest.getUsername())
-                    .password(studentRequest.getPassword())
-                    .build();
+        Student student = studentService.createStudent(studentRequest);
+        LoginRequest loginRequest = LoginRequest.builder()
+                .username(studentRequest.getUsername())
+                .password(studentRequest.getPassword())
+                .build();
 
-            if(doAuthenticate(loginRequest)){
-                return createToken("student is successfully registered.", student.getUsername());
-            }
-            else{
-                return new ResponseEntity<>(AuthResponse.builder().
-                        message("authentication is failed after registration").build(), HttpStatus.UNAUTHORIZED);
-            }
+        if(doAuthenticate(loginRequest)){
+            return createToken("student is successfully registered.", student.getUsername());
         }
         else{
             return new ResponseEntity<>(AuthResponse.builder().
-                    message("there is already a student with this username.").build(), HttpStatus.BAD_REQUEST);
+                    message("authentication is failed after registration").build(), HttpStatus.UNAUTHORIZED);
         }
     }
 
     public ResponseEntity<AuthResponse> registerInstructor(InstructorRequest instructorRequest) {
-        if(instructorService.getInstructorByUsername(instructorRequest.getUsername()) == null){
-            Instructor instructor = instructorService.createInstructor(instructorRequest);
-            LoginRequest loginRequest = LoginRequest.builder()
-                    .username(instructorRequest.getUsername())
-                    .password(instructorRequest.getPassword())
-                    .build();
-            JwtUserDetails userDetails = userDetailsService.loadUserByUsername(instructorRequest.getUsername());
-            System.out.println(userDetails.getUsername() + ", " + userDetails.getPassword());
+        Instructor instructor = instructorService.createInstructor(instructorRequest);
+        LoginRequest loginRequest = LoginRequest.builder()
+                .username(instructorRequest.getUsername())
+                .password(instructorRequest.getPassword())
+                .build();
 
-            if(doAuthenticate(loginRequest)){
-                return createToken("instructor is successfully registered.", instructor.getUsername());
-            }
-            else{
-                return new ResponseEntity<>(AuthResponse.builder().
-                        message("authentication is failed after registration").build(), HttpStatus.UNAUTHORIZED);
-            }
+        if(doAuthenticate(loginRequest)){
+            return createToken("instructor is successfully registered.", instructor.getUsername());
         }
         else{
             return new ResponseEntity<>(AuthResponse.builder().
-                    message("there is already an instructor with this username.").build(), HttpStatus.BAD_REQUEST);
+                    message("authentication is failed after registration").build(), HttpStatus.UNAUTHORIZED);
         }
     }
 
@@ -146,6 +132,7 @@ public class AuthService {
                 accessToken("Bearer " + accessToken).
                 refreshToken(token.getRefreshToken()).
                 userId(userDetails.getId()).
+                role(userDetails.getRole()).
                 message(message).build(), HttpStatus.CREATED);
     }
 

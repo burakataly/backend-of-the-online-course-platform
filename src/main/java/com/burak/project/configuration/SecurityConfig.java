@@ -20,6 +20,8 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.web.filter.CorsFilter;
 
 @Configuration
 @EnableWebSecurity
@@ -62,7 +64,7 @@ public class SecurityConfig {
                                 .requestMatchers(HttpMethod.GET, "/enrollments")
                                 .hasAnyRole(Role.ADMIN.name())
                                 .requestMatchers(HttpMethod.GET, "/enrollments/{id}")
-                                .hasAnyRole(Role.ADMIN.name())
+                                .hasAnyRole(Role.ADMIN.name(), Role.STUDENT.name())
                                 .requestMatchers(HttpMethod.GET, "/enrollments/student/{studentId}")
                                 .hasAnyRole(Role.ADMIN.name(), Role.STUDENT.name())
                                 .requestMatchers(HttpMethod.DELETE, "/enrollments/{enrollmentId}")
@@ -76,6 +78,7 @@ public class SecurityConfig {
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .formLogin(AbstractAuthenticationFilterConfigurer::disable)
+                .addFilterBefore(corsFilter(), UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
     }
@@ -96,5 +99,19 @@ public class SecurityConfig {
     @Bean
     public BCryptPasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
+    }
+
+    @Bean
+    public CorsFilter corsFilter() {
+        org.springframework.web.cors.CorsConfiguration corsConfiguration = new org.springframework.web.cors.CorsConfiguration();
+        corsConfiguration.setAllowCredentials(true);
+        corsConfiguration.addAllowedOriginPattern("*");
+        corsConfiguration.addAllowedHeader("*");
+        corsConfiguration.addAllowedMethod("*");
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", corsConfiguration);
+
+        return new CorsFilter(source);
     }
 }
